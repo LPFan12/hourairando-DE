@@ -52,6 +52,8 @@ namespace NSMap.Character
         private bool encounterBreak;
         public int currentfield = 0;
         public int[] battleitem = new int[1000];
+        public bool bypassrandoforboss = false;
+        public bool firewalltest = false;
 
         public void CloseMenu()
         {
@@ -292,6 +294,7 @@ namespace NSMap.Character
                         this.MoveKey(num);
                     if (this.encount)
                     {
+                        Console.WriteLine("Encounter whiteflash");
                         this.Encount();
                         return;
                     }
@@ -895,6 +898,7 @@ namespace NSMap.Character
                     {
                         if (this.Random.Next(100) < 75 || this.savedata.runSubChips[1] || this.encounter)
                         {
+                            bypassrandoforboss = true;
                             this.encounter = false;
                             if (this.savedata.runSubChips[3])
                             {
@@ -912,10 +916,13 @@ namespace NSMap.Character
                                     this.encounts = new List<EventManager>();
                                     for (int index = 0; index < this.field.encounts.Count - this.field.encountCap[1]; ++index)
                                         this.encounts.Add(this.field.encounts[index]);
+                                    
                                 }
                                 else
                                 {
                                     this.encounts = new List<EventManager>(field.encounts);
+                                    Console.WriteLine("regular encounter");
+                                    bypassrandoforboss = false;
                                 }
 
                                 if (ignoreaddonmods == false)
@@ -945,6 +952,8 @@ namespace NSMap.Character
                                 this.encount = true;
                                 //set this encounter as previous encounter for subchip reasons
                                 this.savedata.ValList[19] = this.field.encounts.IndexOf(this.encounts[this.encountNumber]);
+                                //Console.WriteLine("Repeat encounter: " + this.savedata.ValList[19]);
+
                             }
                         }
                     }
@@ -961,94 +970,224 @@ namespace NSMap.Character
             }
         }
 
+        private void GenerateRandoEncounter()
+        {
+            var test = this.savedata.totalfights;
+            Console.WriteLine("Not a boss, rando encounter generating");
+            int configseed = ShanghaiEXE.Config.Seed;
+
+            //add in every unique indentifiable variable i can think of to create a unique seed
+            var fightseed = this.encountNumber + configseed + this.savedata.ValList[150];
+
+
+            #region wrap number into encounter list
+            //can probobly move this to a diffrent function but whatever
+            var x_min = 0;
+            var x_max = this.savedata.totalfights;
+            var x = fightseed;
+
+            if (x < x_min)
+                x = x_max - (x_min - x) % (x_max - x_min);
+            else
+                x = x_min + (x - x_min) % (x_max - x_min);
+
+            fightseed = x;
+            #endregion
+            Console.WriteLine("Fightseed: " + fightseed);
+
+            //parse the battle in postion fightseed
+
+            string input = this.savedata.encounterid[fightseed];
+
+            string[] parts = input.Split(':');
+
+            List<int> numbers = parts
+                .Where(s => int.TryParse(s, out _)) // Filter for numeric strings
+                .Select(s => int.Parse(s))          // Convert the filtered strings to integers
+                .ToList();
+
+            //Console.WriteLine("Original string: " + input);
+            //Console.WriteLine("Numeric values only:");
+
+            int index = 0;
+            foreach (int number in numbers)
+            {
+                //debugging
+                //Console.WriteLine("Entry #" + index + "  " + number);
+                index++;
+            }
+
+            //scuffed byte converter
+            byte ennum1 = (byte)numbers[1];
+            byte ennum2 = (byte)numbers[9];
+            byte ennum3 = (byte)numbers[17];
+
+            //set bg
+            int randobg = random.Next(4, 40);
+            //a couple bgs in here are solid colors but i cant find em, fix later
+
+            this.parent.eventmanager.ClearEvent();
+            //todo: add option to randomize fieild?
+            this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, numbers[0], ennum1, numbers[2], numbers[3], numbers[4], numbers[5], numbers[6], numbers[7], "<- enemy1", numbers[8], ennum2, numbers[10], numbers[11], numbers[12], numbers[13], numbers[14], numbers[15], "<- enemy2", numbers[16], ennum3, numbers[18], numbers[19], numbers[20], numbers[21], numbers[22], numbers[23], "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", randobg, this.savedata));
+
+            //test battle
+            //this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, 28, 1, 4, 1, 1, 1, 1, 0, "<- enemy1", 33, 2, 5, 0, 1, 1, 1, 0, "<- enemy2", 33, 2, 5, 2, 1, 1, 1, 0, "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", 4, this.savedata));
+
+
+            //
+            this.parent.eventmanager.AddEvent(new Fade(this.sound, this.parent.eventmanager, 20, 0, byte.MaxValue, byte.MaxValue, byte.MaxValue, true, this.savedata));
+
+
+
+            //restart music here
+            this.parent.eventmanager.AddEvent(new BGMon(this.sound, this.parent.eventmanager, this.sound.CurrentBGM, 0, this.savedata));
+
+
+        }
+
         private void Encount()
         {
+            //this code sucks but the event manger sucks even harder
             Console.WriteLine("Encounter starting");
-            bool encounterrando = false;
+            bool encounterrando = true;
 
-            if (encounterrando == false) //vanilla behaviour
-            {
-                this.parent.eventmanager.EventClone(this.encounts[this.encountNumber]);
-                Console.WriteLine(this.encounts[this.encountNumber]);
+            var isaboss = false;
+            var skiprando = false;
+            var battle = (Battle)this.field.encounts[this.encountNumber].events[1];
+            var strongEnemyCheck = false;
 
-            }
-            //^^ generate the actual event ^^
+            //if (this.savedata.runSubChips[0] == true)
+            //{ encounterrando = false; }
 
-            if (encounterrando == true) //intercept the battle event creation with the most verbose arguments i've ever seen
-            {
-
-                var test = this.savedata.totalfights;
-                Console.WriteLine(test);
-                int configseed = ShanghaiEXE.Config.Seed;
-
-                //add in every unique indentifiable variable i can think of to create a unique seed
-                var fightseed = this.encountNumber + configseed + this.savedata.ValList[150];
-
-
-                #region wrap number into encounter list
-                //can probobly move this to a diffrent function but whatever
-                var x_min = 0;
-                var x_max = this.savedata.totalfights;
-                var x = fightseed;
-
-                if (x < x_min)
-                    x = x_max - (x_min - x) % (x_max - x_min);
-                else
-                    x = x_min + (x - x_min) % (x_max - x_min);
-
-                fightseed = x;
-                #endregion
-                Console.WriteLine("Fightseed: " + fightseed);
-
-                //parse the battle in postion fightseed
-
-                string input = this.savedata.encounterid[fightseed];
-
-                string[] parts = input.Split(':');
-
-                List<int> numbers = parts
-                    .Where(s => int.TryParse(s, out _)) // Filter for numeric strings
-                    .Select(s => int.Parse(s))          // Convert the filtered strings to integers
-                    .ToList();
-
-                Console.WriteLine("Original string: " + input);
-                Console.WriteLine("Numeric values only:");
-
-                int index = 0;
-                foreach (int number in numbers)
+            //if this fight is most likely a boss, don't rando it
+            for (int index = 0; index < 3; ++index)
                 {
-                    Console.WriteLine("Entry #" + index + "  " + number);
-                    index++;
+
+                    EnemyBase e = EnemyBase.EnemyMake((int)battle.enemy[index], null, true);
+                    if (e != null)
+                    {
+                        EnemyBase enemyBase = EnemyBase.EnemyMake((int)battle.enemy[index], e, true);
+                        if (e is NaviBase || e.version == 0)
+                        {
+                            strongEnemyCheck = true;
+                            skiprando = true;
+                            isaboss = true;
+                    }
+                    }
+                } 
+
+
+            if (this.savedata.runSubChips[0] == true)
+            {
+                strongEnemyCheck = true;
+            }
+
+            if ((strongEnemyCheck == true) || (firewalltest == true)) //vanilla behaviour
+                {
+                    this.parent.eventmanager.EventClone(this.encounts[this.encountNumber]);
+                    Console.WriteLine("this is most likely a boss (or antivirus is enabled), skipping rando");
+                    Console.WriteLine(this.encounts);
+                    skiprando = true;
+                    isaboss = true;
                 }
 
-                //scuffed byte converter
-                byte ennum1 = (byte)numbers[1];
-                byte ennum2 = (byte)numbers[9];
-                byte ennum3 = (byte)numbers[17];
+            //else, intercept the battle event creation with the most verbose arguments i've ever seen
 
-                //set bg
-                int randobg = random.Next(4, 40);
+            if (strongEnemyCheck == false)
+            { 
+                if ((encounterrando == true))
+                {
 
-                this.parent.eventmanager.ClearEvent();
+                    var test = this.savedata.totalfights;
+                    Console.WriteLine("Not a boss, rando encounter generating");
+                    int configseed = ShanghaiEXE.Config.Seed;
 
-                this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, numbers[0], ennum1, numbers[2], numbers[3], numbers[4], numbers[5], numbers[6], numbers[7], "<- enemy1", numbers[8], ennum2, numbers[10], numbers[11], numbers[12], numbers[13], numbers[14], numbers[15], "<- enemy2", numbers[16], ennum3, numbers[18], numbers[19], numbers[20], numbers[21], numbers[22], numbers[23], "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", randobg, this.savedata));
-
-                //test battle
-                //this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, 28, 1, 4, 1, 1, 1, 1, 0, "<- enemy1", 33, 2, 5, 0, 1, 1, 1, 0, "<- enemy2", 33, 2, 5, 2, 1, 1, 1, 0, "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", 4, this.savedata));
+                    //add in every unique indentifiable variable i can think of to create a unique seed
+                    var fightseed = this.encountNumber + configseed + this.savedata.ValList[150];
 
 
-                //
-                this.parent.eventmanager.AddEvent(new Fade(this.sound, this.parent.eventmanager, 20, 0, byte.MaxValue, byte.MaxValue, byte.MaxValue, true, this.savedata));
+                    #region wrap number into encounter list
+                    //can probobly move this to a diffrent function but whatever
+                    var x_min = 0;
+                    var x_max = this.savedata.totalfights;
+                    var x = fightseed;
+
+                    if (x < x_min)
+                        x = x_max - (x_min - x) % (x_max - x_min);
+                    else
+                        x = x_min + (x - x_min) % (x_max - x_min);
+
+                    fightseed = x;
+                    #endregion
+                    Console.WriteLine("Fightseed: " + fightseed);
+
+                    //parse the battle in postion fightseed
+
+                    string input = this.savedata.encounterid[fightseed];
+
+                    string[] parts = input.Split(':');
+
+                    List<int> numbers = parts
+                        .Where(s => int.TryParse(s, out _)) // Filter for numeric strings
+                        .Select(s => int.Parse(s))          // Convert the filtered strings to integers
+                        .ToList();
+
+                    //Console.WriteLine("Original string: " + input);
+                    //Console.WriteLine("Numeric values only:");
+
+                    int index = 0;
+                    foreach (int number in numbers)
+                    {
+                        //debugging
+                        //Console.WriteLine("Entry #" + index + "  " + number);
+                        index++;
+                    }
+
+                    //scuffed byte converter
+                    byte ennum1 = (byte)numbers[1];
+                    byte ennum2 = (byte)numbers[9];
+                    byte ennum3 = (byte)numbers[17];
+
+                    //set bg
+                    int randobg = random.Next(4, 40);
+                    //a couple bgs in here are solid colors but i cant find em, fix later
+
+                    this.parent.eventmanager.ClearEvent();
+                    //todo: add option to randomize fieild?
+                    this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, numbers[0], ennum1, numbers[2], numbers[3], numbers[4], numbers[5], numbers[6], numbers[7], "<- enemy1", numbers[8], ennum2, numbers[10], numbers[11], numbers[12], numbers[13], numbers[14], numbers[15], "<- enemy2", numbers[16], ennum3, numbers[18], numbers[19], numbers[20], numbers[21], numbers[22], numbers[23], "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", randobg, this.savedata));
+
+                    //test battle
+                    //this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, 28, 1, 4, 1, 1, 1, 1, 0, "<- enemy1", 33, 2, 5, 0, 1, 1, 1, 0, "<- enemy2", 33, 2, 5, 2, 1, 1, 1, 0, "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", 4, this.savedata));
+
+
+                    //
+                    this.parent.eventmanager.AddEvent(new Fade(this.sound, this.parent.eventmanager, 20, 0, byte.MaxValue, byte.MaxValue, byte.MaxValue, true, this.savedata));
+
+
+
+                    //restart music here
+                    this.parent.eventmanager.AddEvent(new BGMon(this.sound, this.parent.eventmanager, this.sound.CurrentBGM, 0, this.savedata));
+                }
+                else if (isaboss == false)
+                {
+                    this.parent.eventmanager.EventClone(this.encounts[this.encountNumber]);
+                    Console.WriteLine("vanilla encounter");
+                    Console.WriteLine(this.encounts);
+                }
             }
+
 
             this.parent.eventmanager.playevent = true;
             this.encountCounter = 0;
             this.encount = false;
             this.parent.battleflag = true;
+
+            firewalltest = false;
         }
 
         public void EncountSet(bool ignoreSpecialEncounters)
         {
+
             this.encounter = true;
             this.encounterBreak = true;
             this.encountInterval = 0;
@@ -1065,20 +1204,23 @@ namespace NSMap.Character
             var strongEnemyCheck = false;
             for (int index = 0; index < 3; ++index)
             {
+
                 EnemyBase e = EnemyBase.EnemyMake((int)battle.enemy[index], null, true);
                 if (e != null)
                 {
                     e.version = battle.lank[index];
                     EnemyBase enemyBase = EnemyBase.EnemyMake((int)battle.enemy[index], e, true);
-                    totalEnemyHp += enemyBase.HpMax;
+                    //totalEnemyHp += enemyBase.HpMax;
+                    totalEnemyHp += 0;
 
                     if (this.savedata.runSubChips[1] && (e is NaviBase || e.version == 0))
                     {
                         strongEnemyCheck = true;
+                        firewalltest = true;
                     }
                 }
             }
-            var maxHpCheck = this.savedata.HPMax + 100 < totalEnemyHp;
+            var maxHpCheck = true;
 
 
             return maxHpCheck || strongEnemyCheck;
