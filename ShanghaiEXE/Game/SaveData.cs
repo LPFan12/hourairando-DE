@@ -29,6 +29,7 @@ namespace NSGame
         private const string SavePathTemp = "save.she.tmp";
         private const string BackupPath = "save.she.bak";
 
+        public bool initboot = true;
         public static int decCount = 0;
         public static string pass = "sasanasi";
         public static Virus[] HAVEVirus = new Virus[3];
@@ -2155,6 +2156,7 @@ namespace NSGame
 
         public byte Regularlarge
         {
+            //big smoke be like
             get
             {
                 return this.regularlarge;
@@ -3799,80 +3801,84 @@ namespace NSGame
 
         public void Mapencounterfinder()
         {
-            Console.WriteLine("Starting battle indexing...");
-
-            var linenumb = 0;
-            var mapno = 0;
-            string txtname = "";
-            var mapslookedthru = 0;
-            
-            var totalgifteditems = 0;
-            //var totalmaps = 174;
-            var startofgifts = 700;
-
-            int[,] sourcemap = new int[1000, 2];
-            int[] dupemode = new int[1000];
-
-
-            //loop thru maps and find all non boss encounters
-            var m = 0;
-            var thismap = 0;
-            for (m = 0; m < totalmaps + 1; m++)
+            if (initboot == true) //make sure this dosn't happen every title screen revisit
             {
-                thismap = 0;
-                txtname = FindMapName(mapno);
+                initboot = false;
+                Console.WriteLine("Starting battle indexing...");
 
-                string path = Debug.MaskMapFile ? "MapData/" + txtname + ".shd" : "map/" + txtname + ".txt";
-                if (!File.Exists(path))
+                var linenumb = 0;
+                var mapno = 0;
+                string txtname = "";
+                var mapslookedthru = 0;
+
+                var totalgifteditems = 0;
+                //var totalmaps = 174;
+                var startofgifts = 700;
+
+                int[,] sourcemap = new int[1000, 2];
+                int[] dupemode = new int[1000];
+
+
+                //loop thru maps and find all non boss encounters
+                var m = 0;
+                var thismap = 0;
+                for (m = 0; m < totalmaps + 1; m++)
                 {
-                    Console.WriteLine("Not found?");
+                    thismap = 0;
+                    txtname = FindMapName(mapno);
 
-                }
-                else
-                {
-                    //Console.WriteLine("File found!");
-                }
-
-
-                StreamReader sr = new StreamReader(path);
-
-               
-                string gettext1 = "VSvirus"; //method2, checking for generic virus battles
-
-                string line;
-
-                //stick all the non boss random encounters in a list
-                while ((line = sr.ReadLine()) != null)
-                {
-                    linenumb++;
-
-                    if (line.Contains(gettext1))
+                    string path = Debug.MaskMapFile ? "MapData/" + txtname + ".shd" : "map/" + txtname + ".txt";
+                    if (!File.Exists(path))
                     {
-                        Console.WriteLine(line); //debug
-                        string newstr = line;
-                        thismap++;
-                        encounterid[totalfights] = newstr;
-                        totalfights++;
-
-//                        fightsinthismap[mapno]++;
-
-                        //Console.WriteLine("Fights in map " + m + " :" + thismap);
+                        Console.WriteLine("Not found?");
 
                     }
-                    
+                    else
+                    {
+                        //Console.WriteLine("File found!");
+                    }
+
+
+                    StreamReader sr = new StreamReader(path);
+
+
+                    string gettext1 = "VSvirus"; //method2, checking for generic virus battles
+
+                    string line;
+
+                    //stick all the non boss random encounters in a list
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        linenumb++;
+
+                        if (line.Contains(gettext1))
+                        {
+                            Console.WriteLine(line); //debug
+                            string newstr = line;
+                            thismap++;
+                            encounterid[totalfights] = newstr;
+                            totalfights++;
+
+                            //                        fightsinthismap[mapno]++;
+
+                            //Console.WriteLine("Fights in map " + m + " :" + thismap);
+
+                        }
+
+                    }
+                    fightsinthismap[mapno] = thismap;
+                    Console.WriteLine("Fights in map " + mapno + " :" + thismap);
+
+                    linenumb = 0;
+                    mapno++;
+
+
                 }
-                fightsinthismap[mapno] = thismap;
-                Console.WriteLine("Fights in map " + mapno + " :" + thismap);
 
-                linenumb = 0;
-                mapno++;
 
+                Console.WriteLine("Total fights: " + totalfights);
 
             }
-
-
-            Console.WriteLine("Total fights: " + totalfights);
-
         }
 
         public void AP_Connect()

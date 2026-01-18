@@ -921,7 +921,7 @@ namespace NSMap.Character
                                 else
                                 {
                                     this.encounts = new List<EventManager>(field.encounts);
-                                    Console.WriteLine("regular encounter");
+                                    Console.WriteLine("attempting an encounter");
                                     bypassrandoforboss = false;
                                 }
 
@@ -1049,7 +1049,12 @@ namespace NSMap.Character
         {
             //this code sucks but the event manger sucks even harder
             Console.WriteLine("Encounter starting");
-            bool encounterrando = true;
+
+
+            bool encounterrando = false;
+
+            if (this.savedata.ValList[151] > 0)
+                { encounterrando = true; }
 
             var isaboss = false;
             var skiprando = false;
@@ -1085,7 +1090,7 @@ namespace NSMap.Character
             if ((strongEnemyCheck == true) || (firewalltest == true)) //vanilla behaviour
                 {
                     this.parent.eventmanager.EventClone(this.encounts[this.encountNumber]);
-                    Console.WriteLine("this is most likely a boss (or antivirus is enabled), skipping rando");
+                    Console.WriteLine("this is most likely a boss (or firewall is enabled), skipping rando");
                     Console.WriteLine(this.encounts);
                     skiprando = true;
                     isaboss = true;
@@ -1154,14 +1159,32 @@ namespace NSMap.Character
 
                     this.parent.eventmanager.ClearEvent();
                     //todo: add option to randomize fieild?
-                    this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, numbers[0], ennum1, numbers[2], numbers[3], numbers[4], numbers[5], numbers[6], numbers[7], "<- enemy1", numbers[8], ennum2, numbers[10], numbers[11], numbers[12], numbers[13], numbers[14], numbers[15], "<- enemy2", numbers[16], ennum3, numbers[18], numbers[19], numbers[20], numbers[21], numbers[22], numbers[23], "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", randobg, this.savedata));
+                    if (this.savedata.ValList[151] == 1)
+                    {
+                        this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, numbers[0], ennum1, numbers[2], numbers[3], numbers[4], numbers[5], numbers[6], numbers[7], "<- enemy1", numbers[8], ennum2, numbers[10], numbers[11], numbers[12], numbers[13], numbers[14], numbers[15], "<- enemy2", numbers[16], ennum3, numbers[18], numbers[19], numbers[20], numbers[21], numbers[22], numbers[23], "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", randobg, this.savedata));
+                    }
+                    else if (this.savedata.ValList[151] == 2)
+                    {
+                        //some viruses freak out if they're not in the middle row but fuck it, you picked chaos
 
-                    //test battle
-                    //this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, 28, 1, 4, 1, 1, 1, 1, 0, "<- enemy1", 33, 2, 5, 0, 1, 1, 1, 0, "<- enemy2", 33, 2, 5, 2, 1, 1, 1, 0, "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", 4, this.savedata));
+                        Random r = new Random();
+                        int en1 = r.Next(0, 41);
+                        int en2 = r.Next(0, 41);
+                        int en3 = r.Next(0, 41);
+
+                        ennum1 = (byte)r.Next(0, 5);
+                        ennum2 = (byte)r.Next(0, 5);
+                        ennum3 = (byte)r.Next(0, 5);
+
+                        this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, en1, ennum1, numbers[2], numbers[3], numbers[4], numbers[5], numbers[6], numbers[7], "<- enemy1", en2, ennum2, numbers[10], numbers[11], numbers[12], numbers[13], numbers[14], numbers[15], "<- enemy2", en3, ennum3, numbers[18], numbers[19], numbers[20], numbers[21], numbers[22], numbers[23], "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", randobg, this.savedata));
+                      
+                    }
+                        //test battle
+                        //this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, 28, 1, 4, 1, 1, 1, 1, 0, "<- enemy1", 33, 2, 5, 0, 1, 1, 1, 0, "<- enemy2", 33, 2, 5, 2, 1, 1, 1, 0, "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", 4, this.savedata));
 
 
-                    //
-                    this.parent.eventmanager.AddEvent(new Fade(this.sound, this.parent.eventmanager, 20, 0, byte.MaxValue, byte.MaxValue, byte.MaxValue, true, this.savedata));
+                        //
+                        this.parent.eventmanager.AddEvent(new Fade(this.sound, this.parent.eventmanager, 20, 0, byte.MaxValue, byte.MaxValue, byte.MaxValue, true, this.savedata));
 
 
 
@@ -1204,23 +1227,20 @@ namespace NSMap.Character
             var strongEnemyCheck = false;
             for (int index = 0; index < 3; ++index)
             {
-
                 EnemyBase e = EnemyBase.EnemyMake((int)battle.enemy[index], null, true);
                 if (e != null)
                 {
                     e.version = battle.lank[index];
                     EnemyBase enemyBase = EnemyBase.EnemyMake((int)battle.enemy[index], e, true);
-                    //totalEnemyHp += enemyBase.HpMax;
-                    totalEnemyHp += 0;
+                    totalEnemyHp += enemyBase.HpMax;
 
                     if (this.savedata.runSubChips[1] && (e is NaviBase || e.version == 0))
                     {
                         strongEnemyCheck = true;
-                        firewalltest = true;
                     }
                 }
             }
-            var maxHpCheck = true;
+            var maxHpCheck = this.savedata.HPMax + 100 < totalEnemyHp;
 
 
             return maxHpCheck || strongEnemyCheck;

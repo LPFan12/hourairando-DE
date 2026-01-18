@@ -89,18 +89,18 @@ namespace NSMap.Character.Menu
                                             break;
                                         case 2:
                                             this.savedata.runSubChips[0] = true;
-                                            this.savedata.ValList[16] = 12000;
+                                            this.savedata.ValList[16] = 48000; //12000
                                             break;
                                         case 3:
                                             this.savedata.runSubChips[1] = true;
-                                            this.savedata.ValList[17] = 12000;
+                                            this.savedata.ValList[17] = 48000;
                                             break;
                                         case 4:
                                             this.savedata.runSubChips[2] = true;
                                             break;
                                         case 5:
                                             this.savedata.runSubChips[3] = true;
-                                            this.savedata.ValList[18] = 12000;
+                                            this.savedata.ValList[18] = 48000;
                                             break;
                                         case 6:
                                             this.player.openmystery = true;

@@ -380,6 +380,14 @@ namespace NSTitle
                                     this.sound.PlaySE(SoundEffect.thiptransmission);
                                     break;
                                 case 2:
+                                    this.sound.PlaySE(SoundEffect.thiptransmission);
+                                    this.savedata.ValList[151]++;
+
+                                    if (this.savedata.ValList[151] > 2)
+                                        { this.savedata.ValList[151] = 0; }
+
+                                    break;
+                                case 3:
                                     menulayer = 0;
                                     optionsel = 3;
                                     break;
@@ -665,7 +673,7 @@ namespace NSTitle
                 dg.DrawText("Options", this._position, true);
                     break;
                 case 1:
-                    optionmax = 2;
+                    optionmax = 3;
                     menuoffy = 90;
                     this._position = new Vector2(menustartx - menuoffx, menustarty - menuoffy);
                     string onoff;
@@ -688,7 +696,27 @@ namespace NSTitle
                         onoff = "Off";
                     }
                     dg.DrawText("Random Fldr: " + onoff, this._position, true);
+
+                    if (this.savedata.ValList[151] == 1)
+                    {
+                        onoff = "On";
+                    }
+                    else if (this.savedata.ValList[151] == 2)
+                    {
+                        onoff = "Chaos";
+                    }
+                    else
+                    {
+                        onoff = "Off";
+                    }
+
+
                     this._position = new Vector2(menustartx - menuoffx, menustarty - menuoffy + 32);
+                    dg.DrawText("Encounter Rando: " + onoff, this._position, true);
+                    //this.savedata.ValList[151]
+                    
+
+                    this._position = new Vector2(menustartx - menuoffx, menustarty - menuoffy + 48);
                     dg.DrawText("Back", this._position, true);
 
 
@@ -731,6 +759,9 @@ namespace NSTitle
                         break;
                         case 1:
                         str = "Start with a random, chaotic folder!";
+                        break;
+                        case 2:
+                        str = "Shuffles all random encounters (except v3 bosses)";
                         break;
                 }
 
