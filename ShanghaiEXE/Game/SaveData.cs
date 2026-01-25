@@ -3876,8 +3876,19 @@ namespace NSGame
                 }
 
 
+
+
                 Console.WriteLine("Total fights: " + totalfights);
 
+                //ShanghaiEXE.Config.Seed
+                //encounterid = ShuffleArray(encounterid, ShanghaiEXE.Config.Seed);
+
+                //encounterid = RemoveBlankEntries(encounterid);
+
+                int rng = ShanghaiEXE.Config.Seed;
+                Random rng2 = new Random(rng);
+                Shuffle(encounterid, rng2);
+                encounterid = RemoveBlankEntries(encounterid);
             }
         }
 

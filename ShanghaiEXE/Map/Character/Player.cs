@@ -1155,28 +1155,42 @@ namespace NSMap.Character
 
                     //set bg
                     int randobg = random.Next(4, 40);
-                    //a couple bgs in here are solid colors but i cant find em, fix later
+                    Console.WriteLine(randobg);
+                    //a couple bgs in here are solid colors, correct them to somthing less bland
+                    switch (randobg)
+                    {
+                        case 15:
+                            randobg++;
+                            break;
+                        case 38:
+                            randobg = 30;
+                            break;
+                        case 39:
+                            randobg = 30;
+                            break;
+
+                    }
 
                     this.parent.eventmanager.ClearEvent();
                     //todo: add option to randomize fieild?
                     if (this.savedata.ValList[151] == 1)
                     {
-                        this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, numbers[0], ennum1, numbers[2], numbers[3], numbers[4], numbers[5], numbers[6], numbers[7], "<- enemy1", numbers[8], ennum2, numbers[10], numbers[11], numbers[12], numbers[13], numbers[14], numbers[15], "<- enemy2", numbers[16], ennum3, numbers[18], numbers[19], numbers[20], numbers[21], numbers[22], numbers[23], "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", randobg, this.savedata));
+                        this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, numbers[0], ennum1, numbers[2], numbers[3], numbers[4], numbers[5], numbers[6], numbers[7], "S.Milk", numbers[8], ennum2, numbers[10], numbers[11], numbers[12], numbers[13], numbers[14], numbers[15], "L.Child", numbers[16], ennum3, numbers[18], numbers[19], numbers[20], numbers[21], numbers[22], numbers[23], "S.Sapphire", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", randobg, this.savedata));
                     }
                     else if (this.savedata.ValList[151] == 2)
                     {
                         //some viruses freak out if they're not in the middle row but fuck it, you picked chaos
 
                         Random r = new Random();
-                        int en1 = r.Next(0, 41);
+                        int en1 = r.Next(1, 41); //prevent the game from rolling 3 0's
                         int en2 = r.Next(0, 41);
                         int en3 = r.Next(0, 41);
 
-                        ennum1 = (byte)r.Next(0, 5);
+                        ennum1 = (byte)r.Next(0, 5); //this could probobly use weighting but whatevs
                         ennum2 = (byte)r.Next(0, 5);
                         ennum3 = (byte)r.Next(0, 5);
 
-                        this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, en1, ennum1, numbers[2], numbers[3], numbers[4], numbers[5], numbers[6], numbers[7], "<- enemy1", en2, ennum2, numbers[10], numbers[11], numbers[12], numbers[13], numbers[14], numbers[15], "<- enemy2", en3, ennum3, numbers[18], numbers[19], numbers[20], numbers[21], numbers[22], numbers[23], "<- enemy3", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", randobg, this.savedata));
+                        this.parent.eventmanager.AddEvent(new Battle(this.sound, this.parent.eventmanager, en1, ennum1, numbers[2], numbers[3], numbers[4], numbers[5], numbers[6], numbers[7], "S.Milk", en2, ennum2, numbers[10], numbers[11], numbers[12], numbers[13], numbers[14], numbers[15], "L.Child", en3, ennum3, numbers[18], numbers[19], numbers[20], numbers[21], numbers[22], numbers[23], "S.Sapphire", Panel.PANEL._nomal, Panel.PANEL._nomal, 0, false, true, true, true, "VSvirus", randobg, this.savedata));
                       
                     }
                         //test battle
