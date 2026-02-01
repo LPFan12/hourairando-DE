@@ -788,7 +788,7 @@ namespace NSTitle
             Color white2 = Color.White;
             if (menulayer == 0)
             {
-            string str = "v0.2.0";
+            string str = "v0.2.1";
             this._position = new Vector2(0.0f, 147 + topoff);
             dg.DrawMicroText(str, this._position, white2);
             

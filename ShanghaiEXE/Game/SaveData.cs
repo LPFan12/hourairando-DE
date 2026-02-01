@@ -3318,30 +3318,7 @@ namespace NSGame
                 }
 
             }
-            //Console.WriteLine(entriesadded);
 
-            //Conssole.WriteLine("----unshuffled-----");
-            //PrintArray(newsize);
-
-           // int rng = ShanghaiEXE.Config.Seed; //get RNG seed
-            //rng = 0;
-
-            //Random random = new Random(rng);  // Create a Random object with the provided seed
-
-            
-            /*
-             * 
-            if (rng > 0)
-            {
-                //int seed = 123456;
-                int seed = rng;
-                
-                ShuffleRows(newsize, seed); //shuffle it up good
-                ShuffleFirstColumn(newsize, seed); //then shuffle only the first column so that we can refer to it later
-            }
-            */
-            //Console.WriteLine("----shuffled-----");
-            //PrintArray(newsize);
 
             for (int i=0;i<999;i++)
             {
