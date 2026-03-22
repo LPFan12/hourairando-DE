@@ -176,7 +176,7 @@ hitrange:20:20:8:8
 hitform:square
 event:
 msgopen:
-msg:patchi_randohint1
+msg:Map.LibraryPatchouliStage3Dialogue12FacePatchouli
 msgclose:
 end
 

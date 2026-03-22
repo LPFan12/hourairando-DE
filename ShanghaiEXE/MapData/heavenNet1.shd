@@ -115,6 +115,81 @@ battle:35:4:3:0:1:1:1:0::24:3:4:1:1:1:1:0::35:4:3:2:1:1:1:0::0:5:9:False:True:Tr
 
 random:3,8,5000,:0,61,2,:0,172,3,:0,150,1,:0,174,3,:1,3,0,:1,2,0,:1,4,0,:4,0,0,Map.RandomItemEncounterName:4,0,0,Map.RandomItemEncounterName
 
+ID:SpecialBMD2
+position:401:394:0
+page:1
+startterms:Abutton
+type:1
+terms:!flag/878
+move:
+speed:3
+graphic:-2:0,40,16,40,16
+hitrange:8:8:6:6
+hitform:square
+event:
+editFlag:878:True
+ItemGet:2:95:6:
+end
+
+ID:SpecialBMD3
+position:482:42:0
+page:1
+startterms:Abutton
+type:1
+terms:!flag/879
+move:
+speed:3
+graphic:-2:0,40,16,40,16
+hitrange:8:8:6:6
+hitform:square
+event:
+editFlag:879:True
+ItemGet:2:96:1:
+end
+
+ID:SpecialBMD7
+position:420:42:0
+page:1
+startterms:Abutton
+type:1
+terms:!flag/883
+move:
+speed:3
+graphic:-2:0,40,16,40,16
+hitrange:8:8:6:6
+hitform:square
+event:
+editFlag:883:True
+ItemGet:2:97:7:
+end
+
+ID:SpecialBMD5
+position:20:196:0
+page:1
+startterms:Abutton
+type:1
+terms:!flag/881
+move:
+speed:3
+graphic:-2:0,40,16,40,16
+hitrange:8:8:6:6
+hitform:square
+event:
+editFlag:881:True
+ItemGet:2:35:2:
+end
+page:2
+startterms:Abutton
+type:1
+terms:flag/870,!flag/873
+move:
+speed:3
+graphic:-2:0,40,16,40,16
+hitrange:8:8:6:6
+hitform:square
+event:
+end
+
 ID:BGMStart
 position:157:81:0
 page:1
@@ -3212,7 +3287,7 @@ event:
 end
 
 ID:SpecialGhost3
-position:497:54:0
+position:497:58:0
 page:1
 startterms:Abutton
 type:1
@@ -3593,6 +3668,23 @@ hitform:square
 event:
 ItemGet:3:8:0:KeyItem.OrderBookName
 EditItem:33:True
+end
+
+ID:Sprite
+position:0:0:0
+page:1
+startterms:Abutton
+type:1
+terms:none
+move:
+speed:0
+graphic:2:6,0,7,0,0
+hitrange:3:0:0:0
+hitform:circle
+event:
+msgopen:
+msg:Debug.UnimplementedText
+msgclose:
 end
 
 ID:SpecialDoor1
@@ -5911,7 +6003,7 @@ event:
 end
 
 ID:大きな桜
-position:102:270:0
+position:104:272:0
 page:1
 startterms:Abutton
 type:2
@@ -6143,7 +6235,7 @@ event:
 end
 
 MysteryID:BMD259
-position:479:46:0
+position:466:44:0
 Mystery:1,2,96,1,,281
 page:1
 startterms:Abutton
@@ -6169,7 +6261,7 @@ event:
 end
 
 MysteryID:BMD259
-position:20:203:0
+position:16:216:0
 Mystery:1,2,35,2,,259
 page:1
 startterms:Abutton
@@ -6221,7 +6313,7 @@ event:
 end
 
 MysteryID:BMD259
-position:397:382:0
+position:386:397:0
 Mystery:1,2,95,6,,524
 page:1
 startterms:Abutton

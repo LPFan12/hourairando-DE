@@ -328,6 +328,27 @@ battle:36:4:5:1:1:1:1:0::36:4:3:1:1:1:1:0::26:4:4:1:1:1:1:0::4:0:4:False:True:Tr
 
 random:4,0,0,Map.RandomItemEncounterName:4,0,0,Map.RandomItemEncounterName:4,0,0,Map.RandomItemEncounterName:0,141,0,:3,8,7500,:3,8,9000,:0,176,2,:0,28,0,:0,158,0,:0,139,1,
 
+ID:MeetingCutsceneTrigger
+position:213:170:0
+page:1
+startterms:Touch
+type:1
+terms:!flag/873
+move:
+speed:0
+graphic:-1:0,0,0,0,0
+hitrange:72:8:0:0
+hitform:square
+event:
+ItemGet:3:8:0:KeyItem.DarkKeyName
+EditItem:27:True
+editFlag:875:True
+msgopen:
+msg:rando_goaround
+msgclose:
+editFlag:873:True
+end
+
 ID:MadManShadow
 position:41:337:1
 page:1
@@ -3202,7 +3223,7 @@ event:
 end
 
 ID:SpecialDoor9
-position:115:641:1
+position:114:642:1
 page:1
 startterms:Abutton
 type:1
@@ -3514,7 +3535,6 @@ event:
 msgopen:
 msg:Map.HeavenNet1SpecialDoorLottoCodes1
 msgclose:
-EventLun:SpecialDoor11LottoCodeCheck:-1
 ifFlag:1760:True:0
 seon:get
 wait:15:False
@@ -3533,6 +3553,7 @@ emove:SpecialGhost11:up,24
 fade:15:255:255:255:255:True
 bgmSave:
 battle:42:19:4:2:48:47:46:1500:Map.HeavenNet1GhostEnemyName:7:3:4:1:1:1:1:0::7:3:5:1:1:1:1:0::0:0:20:False:False:False:True:VSnavi:36
+editFlag:827:True
 effectEnd:
 playerHide:False
 editFlag:831:True
@@ -3571,7 +3592,7 @@ event:
 end
 
 ID:SpecialBMD11
-position:372:606:1
+position:373:606:1
 page:1
 startterms:Abutton
 type:1
@@ -3716,6 +3737,7 @@ msgopen:
 msg:Map.HeavenNet2MeetingCutsceneDialogue44
 msg:Map.HeavenNet2MeetingCutsceneDialogue45
 msg:Map.HeavenNet2MeetingCutsceneDialogue46
+emove:MeetingCutsceneYoumu:warpup,100
 stopSkip:
 end
 
@@ -3760,17 +3782,21 @@ fade:32:0:255:255:255:False
 end
 
 ID:MeetingCutsceneYoumu
-position:164:91:0
+position:141:85:0
 page:1
 startterms:Abutton
 type:1
-terms:!flag/871
+terms:!flag/884,!flag/874
 move:
 speed:0
 graphic:18:1,0,1,0,0
 hitrange:3:8:0:0
 hitform:circle
 event:
+msgopen:
+msg:Map.HeavenNet2YoumuAfterMeetingYuyukoUnlockedDialogue2
+msg:Map.HeavenNet2YoumuAfterMeetingNoBattleDialogue1
+msgclose:
 end
 
 ID:MeetingAfterCutsceneYoumu
@@ -3794,21 +3820,6 @@ end
 page:2
 startterms:Abutton
 type:1
-terms:flag/890
-move:
-speed:0
-graphic:18:1,0,3,0,0
-hitrange:3:8:1:1
-hitform:circle
-event:
-msgopen:
-msg:Map.HeavenNet2YoumuAfterMeetingNoBattleDialogue1
-msg:Map.HeavenNet2YoumuAfterMeetingNoBattleDialogue2
-msgclose:
-end
-page:3
-startterms:Abutton
-type:1
 terms:flag/891
 move:
 speed:0
@@ -3820,6 +3831,21 @@ msgopen:
 msg:Map.HeavenNet2YoumuAfterMeetingYuyukoUnlockedDialogue1
 msg:Map.HeavenNet2YoumuAfterMeetingYuyukoUnlockedDialogue2
 msg:Map.HeavenNet2YoumuAfterMeetingYuyukoUnlockedDialogue3
+msgclose:
+end
+page:3
+startterms:Abutton
+type:1
+terms:flag/890
+move:
+speed:0
+graphic:18:1,0,3,0,0
+hitrange:3:8:1:1
+hitform:circle
+event:
+msgopen:
+msg:Map.HeavenNet2YoumuAfterMeetingNoBattleDialogue1
+msg:Map.HeavenNet2YoumuAfterMeetingNoBattleDialogue2
 msgclose:
 end
 page:4

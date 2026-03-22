@@ -25,6 +25,7 @@ namespace Services
             //this.LoadTranslationKeys($"language/{locale}/Map");
             //this.LoadTranslationKeys($"language/{locale}/Messages");
 
+
             var localeLanguageFolder = new DirectoryInfo($"language/{locale}");
             var subFolders = new List<string> { localeLanguageFolder.FullName };
             var unexploredSubFolders = localeLanguageFolder.GetDirectories().ToList();
@@ -81,17 +82,17 @@ namespace Services
                     var key = node.Attributes["Key"].Value;
                     var value = node.Attributes["Value"].Value;
                     var monoProperty = node.Attributes["Mono"]?.Value ?? "False";
-					var mono = bool.Parse(monoProperty);
-					var autoProperty = node.Attributes["Auto"]?.Value ?? "False";
-					var auto = bool.Parse(autoProperty);
-					FACE face;
+                    var mono = bool.Parse(monoProperty);
+                    var autoProperty = node.Attributes["Auto"]?.Value ?? "False";
+                    var auto = bool.Parse(autoProperty);
+                    FACE face;
                     FaceId faceId;
                     if (Enum.TryParse<FACE>(node.Attributes["Face"].Value, out face))
-					{
-						faceId = face.ToFaceId(mono, auto);
-					}
+                    {
+                        faceId = face.ToFaceId(mono, auto);
+                    }
                     else
-					{
+                    {
                         var manualFaceTokens = node.Attributes["Face"].Value.Split(',');
                         int sheet;
                         byte index;
@@ -105,7 +106,7 @@ namespace Services
                         {
                             faceId = FACE.None.ToFaceId(mono, auto);
                         }
-					}
+                    }
                     try
                     {
                         this.language.Add(key, new Dialogue { Text = value, Face = faceId });
@@ -114,7 +115,6 @@ namespace Services
                     {
                         Console.WriteLine("Attempting to add a key that already exists, ignorning");
                     }
-
                 }
 
                 var spriteRectangleConverter = new RectangleConverter();
@@ -123,7 +123,27 @@ namespace Services
                 {
                     var key = node.Attributes["Key"].Value;
                     var sheet = node.Attributes["Sheet"].Value;
-                    var rect = (Rectangle)spriteRectangleConverter.ConvertFromString(node.Attributes["Sprite"].Value.Replace(' ', ','));
+                    String dimensionString = node.Attributes["Sprite"].Value.Replace(' ', ',');
+
+                    int[] values = new int[4];
+                    int index = 0;
+                    while (dimensionString.Length > 0 && index < 4)
+                    {
+                        if (dimensionString.StartsWith(","))
+                        {
+                            index++;
+                        }
+                        else
+                        {
+                            values[index] *= 10;
+                            values[index] += (int)dimensionString[0] - 48;
+                        }
+                        dimensionString = dimensionString.Remove(0, 1);
+
+                    }
+
+                    var rect = new Rectangle(values[0], values[1], values[2], values[3]);
+                    //var rect = (Rectangle)spriteRectangleConverter.ConvertFromString(node.Attributes["Sprite"].Value.Replace(' ', ','));
 
                     this.localizedSprites.Add(key, Tuple.Create(sheet, rect));
                 }
